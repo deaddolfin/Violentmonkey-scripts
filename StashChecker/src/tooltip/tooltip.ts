@@ -1,0 +1,383 @@
+import {
+    DataField, DateFormat,
+    DisplayOptions,
+    readable,
+    StashEndpoint,
+    StashEntry,
+    StashFile,
+    StashSymbol,
+    Target,
+    Type
+} from "../dataTypes";
+import {bytesToReadable, secondsToReadable, typeToString} from "../utils";
+import {StashQuery, StashQueryClass} from "./stashQuery";
+import {symbolMouseoutListener, symbolMouseoverListener} from "./tooltipElement";
+import {booleanOptions, OptionKey, stringOptions} from "../settings/providers";
+import {createSpan} from "../util/htmlHelper";
+
+/**
+ * find existing symbols wrapper span recursively, undefined if none available
+ */
+function getSymbolsWrapper(node: Node): HTMLSpanElement | undefined {
+    if (node instanceof Element) {
+        if (node.getAttribute("data-type") === "stash-symbols") {
+            return node as HTMLSpanElement;
+        } else {
+            return Array.from(node.childNodes)  // child nodes
+                .filter(n => n.isElement())
+                .map(getSymbolsWrapper)
+                .find(n => n);  // first truthy
+        }
+    } else {
+        return Array.from(node.parentElement?.childNodes ?? [])  // sibling nodes
+            .filter(n => n.isElement())
+            .map(getSymbolsWrapper)
+            .find(n => n);  // first truthy
+    }
+}
+
+export function clearSymbols() {
+    // Remove symbol wrappers (each holds one symbol per endpoint)
+    document.querySelectorAll(":not(.stashCheckerPreview).stashCheckerSymbols")
+        .forEach(wrapper => wrapper.remove())
+    // Remove any leftover standalone symbols (safety)
+    document.querySelectorAll(":not(.stashCheckerPreview).stashCheckerSymbol")
+        .forEach(symbol => symbol.remove())
+    // Reset scene card borders
+    document.querySelectorAll(".stashCheckerBordered")
+        .forEach(card => {
+            (card as HTMLElement).style.border = ""
+            card.classList.remove("stashCheckerBordered")
+        })
+}
+
+const propertyStrings: Map<string, (datum: any, queries: StashQuery[], target: Target, numQueries: number) => string> = new Map([
+    [DataField.Aliases, (aliases: any) => aliases.length === 0 ? "" : `<br>Aliases: ${aliases.join(", <wbr>")}`],
+    [DataField.AliasList, (aliasList: any) => aliasList.length === 0 ? "" : `<br>Aliases: ${aliasList.join(", <wbr>")}`],
+    [DataField.Birthdate, (date: string) => `<br>Birthdate: ${formatDate(date)}`],
+    [DataField.BitRate, (bit_rate: any) => `&nbsp;&nbsp;&nbsp;&nbsp;Bitrate: ${(bit_rate / 1000000).toFixed(2)}Mbit/s`],
+    [DataField.CareerLength, (length: string) => `<br>Career Length: ${length}`],
+    [DataField.Code, (code: string) => `<br>Code: ${code}`],
+    [DataField.Date, (date: string) => `<br>Date: ${formatDate(date)}`],
+    [DataField.Director, (director: string) => `<br>Director: ${director}`],
+    [DataField.Disambiguation, (disambiguation: string) => ` <span style="color: grey">(${disambiguation})</span>`],
+    [DataField.Duration, (duration: any) => `&nbsp;&nbsp;&nbsp;&nbsp;Duration: ${secondsToReadable(duration)}`],
+    [DataField.Favorite, () => "&emsp;&#10084;&#65039;"],
+    [DataField.Files, (files: any, queries: StashQuery[], target: Target, numQueries: number) => `${files.map((file: StashFile) => formatFileData(file, queries, target, numQueries)).join("")}`],
+    [DataField.Height, (height: any) => `x${height})`],
+    [DataField.HeightCm, (height: any) => `<br>Height: ${height} cm`],
+    [DataField.Id, (id: string, queries: StashQuery[], target: Target, numQueries: number) => `<br>${formatQueries(queries, target, id, numQueries)}`],
+    [DataField.Name, (name: string) => `<br>Name: ${name}`],
+    [DataField.Organized, (organized: any) => organized ? `&emsp;&#128230;` : ""],
+    [DataField.Path, (path: string) => `Path: ${path}`],
+    [DataField.SceneCount, (count: any) => `<br>Scene Count: ${count}`],
+    [DataField.Size, (size: any) => `&nbsp;&nbsp;&nbsp;&nbsp;Size: ${bytesToReadable(size)}`],
+    [DataField.Studio, (studio: any) => `<br>Studio: ${studio[DataField.Name]}`],
+    [DataField.Tags, (tags: any) => tags.length === 0 ? "" : `<br>Tags: ${tags.map(formatTagPill).join("<wbr>")}`],
+    [DataField.Title, (title: string) => `<br>Title: ${title}`],
+    [DataField.VideoCodec, (video_codec: any) => `<br>Codec: ${video_codec}`],
+    [DataField.Width, (width: any) => ` (${width}`],
+]);
+
+function formatDate(isoDate: string): string {
+    const dateFormat = stringOptions.get(OptionKey.dateFormat)
+    switch (dateFormat) {
+        case DateFormat.Local:
+            return `<time datetime="${isoDate}">${new Date(isoDate).toLocaleDateString()}</time>`;
+        case DateFormat.Iso:
+            return `<time datetime="${isoDate}">${isoDate}</time>`;
+        default:
+            throw Error(`Unknown date format ${dateFormat}`);
+    }
+}
+
+function formatFileData(file: StashFile, queries: StashQuery[], target: Target, numQueries: number): string {
+    let text = Object.entries(file)
+        .map(([key, value]: [string, any]) => value ? propertyStrings.get(key)?.(value, queries, target, numQueries) : undefined)
+        .filter(s => s)
+        .join("")
+    return `<div class='stashChecker file'>${text}</div>`
+}
+
+function formatTagPill(tag: { id: string, name: string }): string {
+    return `<span class='stashChecker tag'>${tag.name}</span>`;
+}
+
+function formatQueries(queries: StashQuery[], target: Target, id: string, numQueries: number): string {
+    return queries.map((query: StashQuery) => new StashQueryClass(query).toHtml(target, id, numQueries)).join("<br>");
+}
+
+function formatEntryData(entry: StashEntry, target: Target, numQueries: number): string {
+    // Tags and Files are always queried (for state detection); their display in the
+    // tooltip is still controlled by the showTags/showFiles options.
+    let showTags = booleanOptions.get(OptionKey.showTags)
+    let showFiles = booleanOptions.get(OptionKey.showFiles)
+    return "<hr>" + Object.entries(entry)
+        .filter(([key]) => showTags || key !== DataField.Tags)
+        .filter(([key]) => showFiles || key !== DataField.Files)
+        .map(([key, value]: [string, any]) => value ? propertyStrings.get(key)?.(value, entry.queries, target, numQueries) : undefined)
+        .filter(s => s)
+        .join("")
+}
+
+/**
+ * Similar to object.assign(), but also merges the children of the objects.
+ */
+function mergeData(target: StashEntry[], source: StashEntry[]): StashEntry[] {
+    // Identify results by endpoint + id, merge identical ones
+    let mapTarget: Map<string, StashEntry> = new Map(target.map(e => [entryKey(e), e]))
+    let mapSource: Map<string, StashEntry> = new Map(source.map(e => [entryKey(e), e]))
+    mapSource.forEach((sourceEntry, key) => {
+        if (mapTarget.has(key)) {
+            // Merge "queries"; Create maps: endpoint -> query
+            let sourceQueries: Map<string, StashQuery> = new Map(sourceEntry.queries.map(v => [v.endpoint, v]))
+            let targetQueries: Map<string, StashQuery> = new Map(mapTarget.get(key)!.queries.map(v => [v.endpoint, v]))
+
+            sourceQueries.forEach((sourceQuery, key) => {
+                if (targetQueries.has(key)) {
+                    let s = new StashQueryClass(sourceQuery)
+                    s.addTypes(targetQueries.get(key)!.types)
+                    sourceQuery = s
+                }
+                targetQueries.set(key, sourceQuery)
+            });
+
+            // Sort and add new value
+            sourceEntry.queries = Array.from(targetQueries.values())
+                .map(q => new StashQueryClass(q))
+                .sort((a, b) => a.compareTo(b))
+        }
+        mapTarget.set(key, sourceEntry)
+    });
+    return Array.from(mapTarget.values());
+}
+
+function entryKey(entry: StashEntry): string {
+    return `${entry.endpoint}-${entry.id}`;
+}
+
+function stashSymbol(): HTMLSpanElement {
+    let symbol = createSpan("stashCheckerSymbol");
+    symbol.setAttribute("data-type", "stash-symbol");
+    symbol.setAttribute("data-count", "1");
+    symbol.addEventListener("mouseover", symbolMouseoverListener);
+    symbol.addEventListener("mouseout", symbolMouseoutListener);
+    return symbol
+}
+
+/**
+ * Comma separated tag list from the settings, normalized to lower case.
+ */
+function getSettingsTags(): string[] {
+    return (stringOptions.get(OptionKey.tagList) ?? "")
+        .split(",")
+        .map(s => s.trim().toLowerCase())
+        .filter(s => s.length > 0);
+}
+
+/**
+ * True if any entry has a tag whose name matches (case-insensitive, exact) one from the settings list.
+ * Applies to all targets that carry tags (scene, performer, studio, group, gallery).
+ */
+function hasSettingsTag(data: StashEntry[]): boolean {
+    let wanted = getSettingsTags();
+    if (wanted.length === 0) {
+        return false;
+    }
+    return data.some(entry =>
+        Array.isArray(entry.tags) &&
+        entry.tags.some((tag: { name?: string }) =>
+            tag?.name != null && wanted.includes(tag.name.toLowerCase())
+        )
+    );
+}
+
+/**
+ * True if any scene entry has no associated file.
+ */
+function anyMissingFile(data: StashEntry[]): boolean {
+    return data.some(entry => !Array.isArray(entry.files) || entry.files.length === 0);
+}
+
+/**
+ * Resolve the state of a single endpoint's results, following the configured priority:
+ * duplicate > tag > no-file > in Stash > not in Stash.
+ */
+export function resolveState(data: StashEntry[], target: Target): StashSymbol {
+    if (data.length === 0) {
+        return StashSymbol.Cross;
+    } else if (data.length > 1) {
+        // Multiple records from the same endpoint == duplicate
+        return StashSymbol.Warning;
+    } else if (hasSettingsTag(data)) {
+        return StashSymbol.Tag;
+    } else if (target === Target.Scene && anyMissingFile(data)) {
+        return StashSymbol.NoFile;
+    } else {
+        return StashSymbol.Check;
+    }
+}
+
+/**
+ * Set a single endpoint symbol's mark, color and tooltip based on its resolved state.
+ */
+function renderSymbol(
+    symbol: HTMLSpanElement,
+    target: Target,
+    endpointName: string,
+    queryTypes: Type[],
+    data: StashEntry[],
+) {
+    let state = resolveState(data, target);
+    let targetReadable = readable(target);
+    let tooltip = "";
+    symbol.setAttribute("data-symbol", state);
+    symbol.innerHTML = "";
+    symbol.style.color = "";
+
+    switch (state) {
+        case StashSymbol.Cross:
+            if (booleanOptions.get(OptionKey.showCrossMark)) {
+                symbol.innerHTML = `${stringOptions.get(OptionKey.crossMark)!}&nbsp;`;
+            }
+            symbol.style.color = "red";
+            tooltip = `${targetReadable} not in Stash<br>`;
+            break;
+        case StashSymbol.Warning:
+            symbol.innerHTML = `${stringOptions.get(OptionKey.warningMark)!}&nbsp;`;
+            symbol.style.color = "orange";
+            tooltip = `${targetReadable} has duplicate matches<br>`;
+            break;
+        case StashSymbol.Tag:
+            if (booleanOptions.get(OptionKey.showTagMark)) {
+                symbol.innerHTML = `${stringOptions.get(OptionKey.tagMark)!}&nbsp;`;
+            }
+            symbol.style.color = "#d800ff";
+            tooltip = `${targetReadable} has a tag from your list<br>`;
+            break;
+        case StashSymbol.NoFile:
+            if (booleanOptions.get(OptionKey.showNoFileMark)) {
+                symbol.innerHTML = `${stringOptions.get(OptionKey.noFileMark)!}&nbsp;`;
+            }
+            symbol.style.color = "red";
+            tooltip = `${targetReadable} has no file<br>`;
+            break;
+        case StashSymbol.Check:
+            if (booleanOptions.get(OptionKey.showCheckMark)) {
+                symbol.innerHTML = `${stringOptions.get(OptionKey.checkMark)!}&nbsp;`;
+            }
+            symbol.style.color = data[0].display.color;
+            break;
+    }
+
+    tooltip += `Endpoint: ${endpointName}`;
+    tooltip += "<br>";
+    tooltip += `Queries: ${queryTypes.map(type => typeToString.get(type)).join(", ")}`;
+    tooltip += data.map(entry => formatEntryData(entry, target, queryTypes.length)).join("");
+
+    symbol.setAttribute("data-info", tooltip);
+}
+
+/**
+ * Border color for a scene card, based on the aggregated states of all symbols inside it.
+ * Priority mirrors the state priority; "not in Stash" (Cross) yields no border.
+ */
+const cardBorderPriority: [StashSymbol, string][] = [
+    [StashSymbol.Warning, "yellow"],
+    [StashSymbol.Tag, "#d800ff"],
+    [StashSymbol.NoFile, "red"],
+    [StashSymbol.Check, "lightgreen"],
+];
+
+function applyCardBorder(node: Node, cardSelector: string | null, target: Target) {
+    if (!cardSelector) {
+        return;
+    }
+    let start: Element | null = node instanceof Element ? node : node.parentElement;
+    let card = start?.closest(cardSelector) as HTMLElement | null;
+    if (!card) {
+        return;
+    }
+    // Only aggregate symbols of the same target (the card's own scene), so unrelated
+    // symbols inside the card (e.g. a studio link) don't drive its border.
+    let states = new Set(
+        Array.from(card.querySelectorAll(".stashCheckerSymbol"))
+            .filter(s => s.getAttribute("data-target") === target)
+            .map(s => s.getAttribute("data-symbol"))
+    );
+    let match = cardBorderPriority.find(([state]) => states.has(state));
+    if (match) {
+        card.style.border = `3px solid ${match[1]}`;
+        card.classList.add("stashCheckerBordered");
+    } else {
+        // Only Cross/empty states: no border
+        card.style.border = "";
+        card.classList.remove("stashCheckerBordered");
+    }
+}
+
+/**
+ * Inserts one symbol per Stash endpoint before the selected element's first text node
+ * and populates the tooltip. Also refreshes the scene card border if configured.
+ */
+export function prefixSymbol(
+    node: Node,
+    target: Target,
+    type: Type,
+    endpoint: StashEndpoint,
+    data: StashEntry[],
+    display: DisplayOptions,
+    cardSelector: string | null = null,
+) {
+    // Specific query for this result
+    let baseUrl = endpoint.url.replace(/\/graphql\/?$/, "");
+    let query: StashQuery = {endpoint: endpoint.name, baseUrl, types: [type]};
+    // Add query, endpoint and display options to each new entry
+    data.forEach((entry: StashEntry) => {
+        entry.queries = [query]
+        entry.endpoint = endpoint.name
+        entry.display = display
+    });
+
+    // Find or create the symbols wrapper (one per checked element)
+    let wrapper = getSymbolsWrapper(node);
+    if (!wrapper) {
+        // insert new wrapper before first text because css selectors cannot select text nodes directly
+        // it works with cases were non text elements (images) are inside the selected element
+        let text = node.firstTextChildDfs();
+        if (!text) {
+            return;  // abort if no text to anchor to
+        }
+        wrapper = createSpan("stashCheckerSymbols");
+        wrapper.setAttribute("data-type", "stash-symbols");
+        text.parentNode?.insertBefore(wrapper, text);
+    }
+
+    // Find or create the per-endpoint symbol inside the wrapper
+    let symbol = Array.from(wrapper.children)
+        .find(c => c.getAttribute("data-endpoint-name") === endpoint.name) as HTMLSpanElement | undefined;
+    let queryTypes: Type[];
+    if (symbol) {
+        // Merge new result (same endpoint, possibly different query type) with existing ones
+        queryTypes = [...new Set<Type>(JSON.parse(symbol.getAttribute("data-queries")!)).add(type)].sort();
+        data = mergeData(JSON.parse(symbol.getAttribute("data-data")!), data);
+        symbol.setAttribute("data-count", (parseInt(symbol.getAttribute("data-count")!) + 1).toString());
+    } else {
+        symbol = stashSymbol();
+        symbol.setAttribute("data-endpoint-name", endpoint.name);
+        queryTypes = [type];
+        wrapper.appendChild(symbol);
+    }
+
+    // Store query results on the symbol
+    symbol.setAttribute("data-endpoints", JSON.stringify([endpoint.name]));
+    symbol.setAttribute("data-target", target);
+    symbol.setAttribute("data-queries", JSON.stringify(queryTypes));
+    symbol.setAttribute("data-data", JSON.stringify(data));
+
+    // Render symbol appearance + tooltip based on the resolved state
+    renderSymbol(symbol, target, endpoint.name, queryTypes, data);
+
+    // Apply/refresh the scene card border (aggregates this target's symbols within the card)
+    applyCardBorder(node, cardSelector, target);
+}

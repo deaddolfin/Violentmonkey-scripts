@@ -1,0 +1,9 @@
+Требуется скрипт для Violentmonkey который находит на странице ссылки формата /scenes/019f7408-305a-7371-907f-d806ecbaa116 и тосле нее добавляет кнопку 
+по нажатию на кнопку:
+1) запрашивается информация об сцене из StashBox через GraphQL (описание схемы доступно https://github.com/stashapp/stash-box/tree/master/graphql/schema)
+2) создается новая сцена приложении Stash через GraphQL (описание схемы доступно https://github.com/stashapp/stash/tree/develop/graphql/schema)
+
+скрипт должен работать с сайтом https://stashdb.org/
+У скрипта должны быть настройки:
+1) url и apikey StashBox
+2) url и apikey Stash
