@@ -1,7 +1,7 @@
 {
   "name": "stash-checker",
   "description": "Add checkmarks on porn websites to scenes/performers that are present in your own Stash instance.",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "license": "MIT",
   "author": {
     "name": "timo95",
@@ -15,7 +15,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/timo95/stash-checker"
+    "url": "https://github.com/deaddolfin/Violentmonkey-scripts",
+    "directory": "StashChecker"
   },
   "type": "module",
   "private": true,

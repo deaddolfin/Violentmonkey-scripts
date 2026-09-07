@@ -45,8 +45,8 @@ export default {
     license: packageJson.license,
     author: "DeadDolfin (based on timo95/stash-checker)",
     source: packageJson.repository.url,
-    updateURL: "https://gist.github.com/deaddolfin/f1fc6ef93da98e2900be60749a1fbda1/raw/index.prod.user.js",
-    downloadURL: "https://gist.github.com/deaddolfin/f1fc6ef93da98e2900be60749a1fbda1/raw/index.prod.user.js",
+    updateURL: "https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/StashChecker/dist/index.prod.user.js",
+    downloadURL: "https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/StashChecker/dist/index.prod.user.js",
     match: [
         "*://adultanime.dbsearch.net/*",
         "*://coomer.st/*",

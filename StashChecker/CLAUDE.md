@@ -34,8 +34,9 @@ npm run dev       # webpack-dev-server :8080 для установки в Violen
 
 - Не поднять `version` в `package.json` = обновление не доедет до пользователя (версия идёт
   в метаблок из `package.json`).
-- Правка исходников без `npm run build` бессмысленна: в gist заливается `dist/index.prod.user.js`.
-- Не менять `updateURL`/`downloadURL` в `metadata.js` — raw-ссылка gist специально без хэша ревизии.
+- Правка исходников без `npm run build` бессмысленна: публикуется `dist/index.prod.user.js`.
+- Не менять `updateURL`/`downloadURL` в `metadata.js` — raw-ссылка GitHub-зеркала специально
+  указывает на ветку `main`, без хэша ревизии.
 - Не возвращать фильтрацию `tags`/`files` в GraphQL-запрос (`getDataFields`) — сломает состояния
   Tag и NoFile.
 - `cardSelector` есть только для части сайтов; селекторы вёрстки хрупкие — правки в них помечать

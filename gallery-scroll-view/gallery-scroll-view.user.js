@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gallery Scroll View (imhentai / hentaiera / hentaienvy / hitomi)
-// @namespace    https://github.com/DeadDolfin/gallery-scroll-view
-// @version      1.0.13
+// @namespace    https://github.com/deaddolfin/Violentmonkey-scripts/tree/main/gallery-scroll-view
+// @version      1.0.14
 // @description  Свиток-просмотр галереи: вертикальная лента из ±10 страниц вокруг текущей. Плавающая панель с зумом, скоростью, автопрокруткой и кнопками ↑/↓. Управление с клавиатуры (стрелки, PageUp/Down, Home/End, +/− зум, * // скорость, пробел, Esc). Кнопка открытия встраивается на reader-странице. Поддержка imhentai/hentaiera/hentaienvy и hitomi.la.
 // @author       DeadDolfin
 // @match        https://imhentai.xxx/view/*
@@ -11,10 +11,10 @@
 // @run-at       document-idle
 // @grant        none
 // @noframes
-// @homepageURL  https://gist.github.com/deaddolfin/fa59bf3e3bc465e70960e237491fe43f
-// @supportURL   https://gist.github.com/deaddolfin/fa59bf3e3bc465e70960e237491fe43f
-// @downloadURL  https://gist.githubusercontent.com/deaddolfin/fa59bf3e3bc465e70960e237491fe43f/raw/gallery-scroll-view.user.js
-// @updateURL    https://gist.githubusercontent.com/deaddolfin/fa59bf3e3bc465e70960e237491fe43f/raw/gallery-scroll-view.user.js
+// @homepageURL  https://github.com/deaddolfin/Violentmonkey-scripts/tree/main/gallery-scroll-view
+// @supportURL   https://github.com/deaddolfin/Violentmonkey-scripts/issues
+// @downloadURL  https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/gallery-scroll-view/gallery-scroll-view.user.js
+// @updateURL    https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/gallery-scroll-view/gallery-scroll-view.user.js
 // ==/UserScript==
 
 (function () {

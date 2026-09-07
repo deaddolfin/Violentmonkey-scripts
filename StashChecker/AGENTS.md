@@ -27,7 +27,7 @@ Userscript **Stash Checker** для Violentmonkey/Tampermonkey. Форк апс�
 
 - Сборка: **webpack 5 + ts-loader + SCSS**. Блок метаданных `==UserScript==` генерируется плагином
   `webpack-userscript` из `metadata.js` (там же список `match` поддерживаемых сайтов, `grant`,
-  `updateURL`/`downloadURL` на gist; версия берётся из `package.json`).
+  `updateURL`/`downloadURL` на raw-ссылку GitHub-зеркала; версия берётся из `package.json`).
 - Точка входа `src/index.ts` → инициализация tooltip/настроек/темы → `runStashChecker()`.
 - `src/stashChecker.ts` — **сайто-специфичная логика**: `switch` по `window.location.host`, для каждого
   сайта задаёт CSS-селекторы и `CheckOptions`, вызывает `check()`.
@@ -98,10 +98,11 @@ target** внутри `element.closest(cardSelector)` (фильтр по `data-t
 
 - Версия скрипта берётся из `package.json` → `metadata.js`. Любое изменение кода → поднять `version`
   в `package.json`, иначе Violentmonkey не увидит обновление.
-- После правок обязательно `npm run build` — в gist заливается именно `dist/index.prod.user.js`.
-- Каноническая копия — gist `f1fc6ef93da98e2900be60749a1fbda1`; заливает пользователь вручную.
-  Напоминайте об этом и отражайте факт заливки в `STATUS.md`.
-- `updateURL`/`downloadURL` в `metadata.js` указывают на raw-ссылку gist без хэша ревизии — не менять.
+- После правок обязательно `npm run build` — публикуется именно `dist/index.prod.user.js`.
+- Каноническая копия — `StashChecker/dist/index.prod.user.js` в репозитории
+  (Forgejo → зеркало на GitHub); публикация = коммит и пуш.
+  Напоминайте об этом и отражайте факт публикации в `STATUS.md`.
+- `updateURL`/`downloadURL` в `metadata.js` указывают на raw-ссылку ветки `main` без хэша ревизии — не менять.
 
 ## Проверка изменений
 

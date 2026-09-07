@@ -7,7 +7,7 @@ Userscript для Violentmonkey/Tampermonkey: на порносайтах пом
 Форк апстрима [timo95/stash-checker](https://github.com/timo95/stash-checker) (базовая версия 1.2.4),
 доработанный под требования `TZ.txt`. Текущая версия — **1.3.0**.
 
-- Установка/обновление: <https://gist.github.com/deaddolfin/f1fc6ef93da98e2900be60749a1fbda1>
+- Установка/обновление: <https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/StashChecker/dist/index.prod.user.js>
 - План доработки: [PLAN.md](PLAN.md) · Состояние работ: [STATUS.md](STATUS.md)
 
 ## Отличия от апстрима
@@ -36,7 +36,7 @@ Userscript для Violentmonkey/Tampermonkey: на порносайтах пом
 
 1. Установите Violentmonkey (или Tampermonkey).
 2. Откройте
-   [raw-ссылку из gist](https://gist.github.com/deaddolfin/f1fc6ef93da98e2900be60749a1fbda1/raw/index.prod.user.js) —
+   [raw-ссылку сборки](https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/StashChecker/dist/index.prod.user.js) —
    расширение предложит установку. Обновления подтягиваются оттуда же (`@updateURL`).
 3. Либо соберите локально (см. «Разработка») и установите `dist/index.prod.user.js` из файла.
 

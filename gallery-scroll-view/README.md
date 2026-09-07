@@ -19,11 +19,14 @@ imhentai-подобных сайтах и hitomi.la. Вместо постран
 
 1. Установить Violentmonkey (или Tampermonkey) в браузер.
 2. Открыть `gallery-scroll-view.user.js` — либо перетащить файл в окно браузера,
-   либо в панели Violentmonkey: *Установить из URL* с ссылкой на gist
+   либо в панели Violentmonkey: *Установить из URL* с raw-ссылкой из репозитория
    (`@downloadURL` в шапке скрипта).
-3. Подтвердить установку. Обновления берутся из gist по `@updateURL`.
+3. Подтвердить установку. Обновления берутся из репозитория по `@updateURL`.
 
-Ссылка на gist: <https://gist.github.com/deaddolfin/fa59bf3e3bc465e70960e237491fe43f>
+Raw-ссылка для установки:
+<https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/gallery-scroll-view/gallery-scroll-view.user.js>
+
+Репозиторий: <https://github.com/deaddolfin/Violentmonkey-scripts/tree/main/gallery-scroll-view>
 
 ## Использование
 

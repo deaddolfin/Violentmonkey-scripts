@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Stash Checker
 // @description Add checkmarks on porn websites to scenes/performers that are present in your own Stash instance.
-// @version 1.3.0
+// @version 1.3.1
 // @author DeadDolfin (based on timo95/stash-checker)
 // @match *://adultanime.dbsearch.net/*
 // @match *://coomer.st/*
@@ -82,7 +82,7 @@
 // @match *://www.wowgirlsblog.com/*
 // @connect localhost
 // @connect *
-// @downloadURL https://gist.github.com/deaddolfin/f1fc6ef93da98e2900be60749a1fbda1/raw/index.prod.user.js
+// @downloadURL https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/StashChecker/dist/index.prod.user.js
 // @grant GM.xmlHttpRequest
 // @grant GM.getValue
 // @grant GM.setValue
@@ -92,8 +92,8 @@
 // @icon https://docs.stashapp.cc/assets/images/favicon.ico
 // @license MIT
 // @run-at document-end
-// @source https://github.com/timo95/stash-checker
-// @updateURL https://gist.github.com/deaddolfin/f1fc6ef93da98e2900be60749a1fbda1/raw/index.prod.user.js
+// @source https://github.com/deaddolfin/Violentmonkey-scripts
+// @updateURL https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/StashChecker/dist/index.prod.user.js
 // ==/UserScript==
 
 /*! For license information please see index.prod.js.LICENSE.txt */
@@ -6787,7 +6787,7 @@
     },
     330(module) {
       module.exports = {
-        rE: "1.3.0"
+        rE: "1.3.1"
       };
     }
   };

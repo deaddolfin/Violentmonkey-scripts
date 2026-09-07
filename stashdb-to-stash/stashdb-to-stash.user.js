@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         StashDB → Stash Scene Importer
-// @namespace    https://gist.github.com/deaddolfin/11a719ab06fd3b5424e491ff45c56b87
-// @version      1.1.1
+// @namespace    https://github.com/deaddolfin/Violentmonkey-scripts/tree/main/stashdb-to-stash
+// @version      1.1.2
 // @description  Добавляет рядом со ссылками на сцены StashDB кнопку импорта: тянет данные сцены из StashBox (GraphQL) и создаёт сцену в локальном Stash (GraphQL).
 // @author       boikov.vv
-// @homepageURL  https://gist.github.com/deaddolfin/11a719ab06fd3b5424e491ff45c56b87
-// @supportURL   https://gist.github.com/deaddolfin/11a719ab06fd3b5424e491ff45c56b87
-// @downloadURL  https://gist.githubusercontent.com/deaddolfin/11a719ab06fd3b5424e491ff45c56b87/raw/stashdb-to-stash.user.js
-// @updateURL    https://gist.githubusercontent.com/deaddolfin/11a719ab06fd3b5424e491ff45c56b87/raw/stashdb-to-stash.user.js
+// @homepageURL  https://github.com/deaddolfin/Violentmonkey-scripts/tree/main/stashdb-to-stash
+// @supportURL   https://github.com/deaddolfin/Violentmonkey-scripts/issues
+// @downloadURL  https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/stashdb-to-stash/stashdb-to-stash.user.js
+// @updateURL    https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/stashdb-to-stash/stashdb-to-stash.user.js
 // @match        https://stashdb.org/*
 // @grant        GM_getValue
 // @grant        GM_setValue

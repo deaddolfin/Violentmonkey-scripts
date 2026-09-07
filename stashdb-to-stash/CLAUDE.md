@@ -29,7 +29,8 @@ node --check stashdb-to-stash.user.js
 ## Ловушки
 
 - Не поднять `@version` после правки = авто-обновление у пользователя не сработает.
-- Не менять `@downloadURL`/`@updateURL` — raw-ссылка gist специально без хэша коммита.
+- Не менять `@downloadURL`/`@updateURL` — raw-ссылка GitHub-зеркала специально указывает
+  на ветку `main`, без хэша коммита.
 - Не переписывать `gql()` на `fetch` — нужен `GM_xmlhttpRequest` ради обхода CORS.
 - Селекторы DOM stashdb.org (`SCENE_RE`, `.SceneCard`, поиск заголовка в `scanScenePage()`)
   подобраны эвристически и не верифицированы на живом сайте — правки в них помечайте

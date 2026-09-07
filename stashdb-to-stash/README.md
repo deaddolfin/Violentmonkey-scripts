@@ -6,17 +6,17 @@ Userscript для [Violentmonkey](https://violentmonkey.github.io/) (совме�
 и создаёт соответствующую сцену в вашем локальном [Stash](https://github.com/stashapp/stash).
 
 - Файл скрипта: [`stashdb-to-stash.user.js`](stashdb-to-stash.user.js)
-- Gist (источник авто-обновления): <https://gist.github.com/deaddolfin/11a719ab06fd3b5424e491ff45c56b87>
+- Источник авто-обновления: <https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/stashdb-to-stash/stashdb-to-stash.user.js>
 - Текущая версия: **1.1.1**
 
 ## Установка
 
 1. Установите расширение Violentmonkey в браузер.
 2. Откройте
-   [raw-ссылку скрипта](https://gist.githubusercontent.com/deaddolfin/11a719ab06fd3b5424e491ff45c56b87/raw/stashdb-to-stash.user.js) —
+   [raw-ссылку скрипта](https://raw.githubusercontent.com/deaddolfin/Violentmonkey-scripts/main/stashdb-to-stash/stashdb-to-stash.user.js) —
    Violentmonkey предложит установку.
    Либо: дашборд Violentmonkey → «Установить из файла» → выбрать локальный `stashdb-to-stash.user.js`.
-3. Обновления подтягиваются автоматически из gist (`@updateURL`/`@downloadURL`).
+3. Обновления подтягиваются автоматически из репозитория (`@updateURL`/`@downloadURL`).
 
 ## Настройка
 
@@ -74,5 +74,5 @@ CORS обходится через `GM_xmlhttpRequest` (`@connect *`), тайм�
 node --check stashdb-to-stash.user.js   # единственная автоматическая проверка
 ```
 
-При изменении кода поднимайте `@version` в шапке и заливайте файл в gist, иначе авто-обновление
+При изменении кода поднимайте `@version` в шапке и пушьте файл в репозиторий, иначе авто-обновление
 не сработает. Подробности — в [AGENTS.md](AGENTS.md), текущее состояние работ — в [STATUS.md](STATUS.md).
