@@ -1,0 +1,22 @@
+title = "Violentmonkey userscripts"
+
+[extend]
+useDefault = true
+
+# Стандартные правила не ловят пароль внутри адреса scheme://user:pass@host
+[[rules]]
+id = "url-credentials"
+description = "Логин и пароль внутри URL"
+regex = '''[a-zA-Z][a-zA-Z0-9+.\-]{1,15}://[^\s/:@'"<>]+:[^\s/:@'"<>{}$]+@[^\s/'"<>]+'''
+keywords = ["://"]
+
+# Токен Telegram-бота: <8-10 цифр>:<35 символов>
+[[rules]]
+id = "telegram-bot-token"
+description = "Токен Telegram-бота"
+regex = '''\b\d{8,10}:AA[A-Za-z0-9_\-]{33}\b'''
+keywords = ["aa"]
+
+[[allowlists]]
+description = "Служебные файлы"
+paths = ['''package-lock\.json$''', '''(^|/)dist/''']
