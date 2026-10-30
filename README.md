@@ -43,6 +43,13 @@ npm run dev  # Запуск dev-server на :8080 с hot reload
 **Требования:** Violentmonkey/Tampermonkey + Stash  
 **Установка:** Просто импортируйте файл `stashdb-to-stash.user.js`
 
+### [send-to-telegram](send-to-telegram/) v1.0.0
+
+Отправляет в Telegram через Bot API картинку (режим выбора кликом), ссылку страницы или выделенный текст. Два варианта: строгий (`send-to-telegram.user.js`, Telegram скачивает картинку по URL сам, `@connect` только `api.telegram.org`) и с резервом (`send-to-telegram-fallback.user.js`, при неудаче браузер скачивает файл и загружает в Telegram, `@connect *`).
+
+**Требования:** Violentmonkey/Tampermonkey + свой Telegram-бот (токен и Chat ID)  
+**Установка:** импортируйте один из двух файлов, затем заполните токен и Chat ID в меню скрипта
+
 ## Технологии
 
 - **TypeScript** (ES2024) — основной язык разработки StashChecker
